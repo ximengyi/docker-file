@@ -1,0 +1,57 @@
+# 使用 PHP 8.1 版本的官方 CLI 镜像作为基础镜像可作为webman基础镜像
+FROM php:8.1-cli
+
+ROM php:8.1.18-cli-alpine
+
+LABEL Maintainer="xi <1203669692@qq.com>" \
+      Description="webman php 8.18"
+# 安装系统依赖和 PHP 扩展编译所需的工具
+RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
+    autoconf \
+    gcc \
+    make \
+    musl-dev \
+    libzip-dev \
+    librdkafka-dev \
+    libevent-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libmcrypt-dev \
+    openssl-dev \
+    libxml2-dev \
+    && apk add --no-cache \
+    libzip \
+    librdkafka \
+    libevent \
+    freetype \
+    libjpeg-turbo \
+    libpng \
+    libmcrypt \
+    openssl \
+    libxml2 \
+    && docker-php-ext-install zip sockets bcmath gd pcntl pdo_mysql mysqli soap opcache \
+    && pecl install rdkafka \
+    && docker-php-ext-enable rdkafka \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && pecl install event \
+    && docker-php-ext-enable --ini-name zdocker-php-ext-event.ini event \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && apk del .build-deps \
+    && rm -rf /tmp/*
+
+# 启用 JIT
+ENV PHP_ENABLE_JIT=1
+
+# 设置工作目录
+WORKDIR /opt/www/
+
+# 复制你的 PHP 代码到容器中
+#COPY . /var/www/html
+
+# 启动 PHP-CLI
+CMD ["php", "-S", "0.0.0.0:80"]
+
