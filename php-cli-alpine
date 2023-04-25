@@ -7,6 +7,7 @@ LABEL Maintainer="xi <1203669692@qq.com>" \
       Description="webman php 8.18"
 # 安装系统依赖和 PHP 扩展编译所需的工具
 RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
+    tzdata  \
     autoconf \
     gcc \
     make \
@@ -39,9 +40,12 @@ RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-
     && docker-php-ext-enable --ini-name zdocker-php-ext-event.ini event \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apk del .build-deps \
     && rm -rf /tmp/*
+
 
 # 启用 JIT
 ENV PHP_ENABLE_JIT=1
