@@ -1,10 +1,10 @@
 # 使用 PHP 8.1 版本的官方 CLI 镜像作为基础镜像可作为webman基础镜像
 #FROM php:8.1-cli
 
-FROM php:8.1.18-cli-alpine
+FROM php:8.1.30-cli-alpine
 
 LABEL Maintainer="xi <1203669692@qq.com>" \
-      Description="webman php 8.18"
+      Description="webman php 8.1.30"
 # 安装系统依赖和 PHP 扩展编译所需的工具
 RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
     tzdata  \
