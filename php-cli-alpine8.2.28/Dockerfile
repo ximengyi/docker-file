@@ -1,16 +1,21 @@
-# 使用 PHP 8.1 版本的官方 CLI 镜像作为基础镜像可作为webman基础镜像
+# 使用 PHP 8.2.28 版本的官方 CLI 镜像作为基础镜像可作为webman基础镜像
 
 FROM php:8.2.28-cli-alpine
 
 LABEL Maintainer="xi <1203669692@qq.com>" \
       Description="webman php 8.2.28-cli-alpine"
 # 安装系统依赖和 PHP 扩展编译所需的工具
-RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
+RUN set -ex  \
+    #apk update && apk upgrade && apk add --no-cache --virtual .build-deps
+    && apk add --no-cache $PHPIZE_DEPS \
+    && apk update \
+    #libstdc++ \
     #librdkafka-dev \
+    linux-headers \
     tzdata  \
     freetype \
     freetype-dev\
-    musl-dev \
+   # musl-dev \
     libzip-dev \
     libevent-dev \
     libpng\
@@ -29,18 +34,20 @@ RUN set -ex && apk update && apk upgrade && apk add --no-cache --virtual .build-
     && docker-php-ext-configure  gd \
     -with-freetype \
     --with-jpeg \
-    --with-png \
     --with-webp \
     && docker-php-ext-install -j$(nproc) gd \   
     && docker-php-ext-install zip sockets bcmath pcntl pdo_mysql mysqli soap opcache \
-    && pecl install rdkafka \
-    && docker-php-ext-enable rdkafka \
+  #  && pecl install rdkafka \
+  #  && docker-php-ext-enable rdkafka \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && pecl install event \
     && docker-php-ext-enable --ini-name zdocker-php-ext-event.ini event \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
+ #   && pecl install swoole \
+ #   && docker-php-ext-enable swoole \
+    && docker-php-source delete \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
   #  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -59,4 +66,3 @@ WORKDIR /opt/www/
 
 # 启动 PHP-CLI
 CMD ["php", "-S", "0.0.0.0:80"]
-

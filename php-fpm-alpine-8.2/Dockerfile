@@ -1,16 +1,18 @@
-FROM php:7.2.32-fpm-alpine
+FROM php:8.2.28-fpm-alpine
 
 RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories
 
 RUN set -ex \
     && apk add --no-cache $PHPIZE_DEPS \
     && apk update \
-    && apk add --no-cache libstdc++ libzip-dev  \
-        wget \
+    && apk add --no-cache libstdc++   \
+      #  wget \
       #  git \
-        vim \
+      # vim \
     && apk add --no-cache \
+       linux-headers \
        # librdkafka-dev \
+        busybox-suid \
         tzdata \
         bash \
         freetype \
@@ -27,9 +29,7 @@ RUN set -ex \
         zip \
         unzip \
     # 安装gd库
-    && docker-php-ext-configure  gd \
-    --with-freetype-dir=/usr/include/freetype2/ \
-    --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
     # 安装zip
     && docker-php-ext-install -j$(nproc) zip \
@@ -43,10 +43,10 @@ RUN set -ex \
         soap \
     # 安装pecl扩展
     && pecl install \
-    http://pecl.php.net/get/redis-6.0.2.tgz \
-    http://pecl.php.net/get/mcrypt-1.0.7.tgz \
-    http://pecl.php.net/get/mongodb-1.16.2.tgz \
-    http://pecl.php.net/get/swoole-4.8.13.tgz \
+    redis \
+    mcrypt\
+    mongodb \
+    swoole \
        # rdkafka \
     && rm -rf /tmp/pear/download/* \
     && docker-php-ext-enable \
@@ -69,7 +69,7 @@ RUN set -ex \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo 'Asia/Shanghai' >/etc/timezone \
     # 修改 vim 配置
-    && echo "set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936" >> /etc/vim/vimrc \
-    && echo "set termencoding=utf-8" >> /etc/vim/vimrc \
-    && echo "set encoding=utf-8" >> /etc/vim/vimrc \
-    && echo "set paste" >> /etc/vim/vimrc 
+   #  && echo "set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936" >> /etc/vim/vimrc \
+   # && echo "set termencoding=utf-8" >> /etc/vim/vimrc \
+   # && echo "set encoding=utf-8" >> /etc/vim/vimrc \
+   # && echo "set paste" >> /etc/vim/vimrc 
