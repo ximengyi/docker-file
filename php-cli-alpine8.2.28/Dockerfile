@@ -15,7 +15,7 @@ RUN set -ex  \
     tzdata  \
     freetype \
     freetype-dev\
-   # musl-dev \
+    musl-dev \
     libzip-dev \
     libevent-dev \
     libpng\
@@ -23,6 +23,8 @@ RUN set -ex  \
     libjpeg-turbo \
     libjpeg-turbo-dev \
     libwebp-dev \
+    zlib \
+    zlib-dev \
     #openssl-dev \
   # zip \
   # unzip \
