@@ -1,44 +1,46 @@
 # 使用 PHP 8.2.28 版本的官方 CLI 镜像作为基础镜像可作为webman基础镜像
 
-FROM php:8.2.28-cli-alpine
+FROM php:8.2.28-cli-alpine3.21
 
 LABEL Maintainer="xi <1203669692@qq.com>" \
       Description="webman php 8.2.28-cli-alpine"
 # 安装系统依赖和 PHP 扩展编译所需的工具
-RUN set -ex  \
-    #apk update && apk upgrade && apk add --no-cache --virtual .build-deps
-    && apk add --no-cache $PHPIZE_DEPS \
-    && apk update \
-    #libstdc++ \
-    #librdkafka-dev \
-    linux-headers \
-    tzdata  \
-    freetype \
-    freetype-dev\
-    musl-dev \
-    libzip-dev \
-    libevent-dev \
-    libpng\
-    libpng-dev \
-    libjpeg-turbo \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    zlib \
-    zlib-dev \
-    #openssl-dev \
-  # zip \
-  # unzip \
+RUN echo "http://mirrors.tuna.tsinghua.edu.cn/alpine/v3.21/main/" > /etc/apk/repositories \
+    && echo "http://mirrors.tuna.tsinghua.edu.cn/alpine/v3.21/community/" >> /etc/apk/repositories
+# RUN set -ex  \
+#     apk update && apk upgrade && apk add --no-cache --virtual .build-deps \
+#     $PHPIZE_DEPS
+RUN set -ex apk update && apk upgrade && apk add --no-cache \
+      $PHPIZE_DEPS\
+   #librdkafka-dev \
+      zlib \
+      zlib-dev \
+      linux-headers \
+      tzdata  \
+      # freetype \
+      freetype-dev\
+      # musl-dev \
+      libzip-dev \
+      libevent-dev \
+      # libpng\
+      libpng-dev \
+      # libjpeg-turbo \
+      libjpeg-turbo-dev \
+      libwebp-dev \
+      libxml2-dev\
+      openssl-dev\
+      libevent \
+      # zip \
+      # unzip \
    # libzip \
   #  librdkafka \
-    libevent \
-   # openssl \
      # 安装gd库
-    && docker-php-ext-configure  gd \
-    -with-freetype \
+   && docker-php-ext-configure  gd \
+    --with-freetype \
     --with-jpeg \
     --with-webp \
     && docker-php-ext-install -j$(nproc) gd \   
-    && docker-php-ext-install zip sockets bcmath pcntl pdo_mysql mysqli soap opcache \
+    && docker-php-ext-install -j$(nproc) zip sockets bcmath pcntl pdo_mysql mysqli soap opcache \
   #  && pecl install rdkafka \
   #  && docker-php-ext-enable rdkafka \
     && pecl install redis \
@@ -53,9 +55,7 @@ RUN set -ex  \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
   #  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && apk del .build-deps \
-    && rm -rf /tmp/* \
-    && pecl clear-cache
+    && rm -rf /tmp/* 
 
 # 启用 JIT
 ENV PHP_ENABLE_JIT=1
