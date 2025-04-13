@@ -28,6 +28,7 @@ RUN set -ex \
         libxml2-dev \
         zip \
         unzip \
+        supervisor \
     # 安装gd库
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
