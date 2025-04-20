@@ -50,6 +50,7 @@ RUN set -ex \
     mongodb \
     swoole \
     nsq \
+    memcache \
        # rdkafka \
     && rm -rf /tmp/pear/download/* \
     && docker-php-ext-enable \
@@ -58,6 +59,7 @@ RUN set -ex \
         mongodb \
         swoole\
         nsq \
+        memcache \
     && docker-php-source delete \
     # && pecl clear-cache \
     && rm -rf /var/lib/apt/lists/* \
