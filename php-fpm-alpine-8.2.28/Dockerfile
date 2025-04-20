@@ -48,6 +48,7 @@ RUN set -ex \
     mcrypt\
     mongodb \
     swoole \
+    memcache\
        # rdkafka \
     && rm -rf /tmp/pear/download/* \
     && docker-php-ext-enable \
@@ -55,6 +56,7 @@ RUN set -ex \
         mcrypt \
         mongodb \
         swoole\
+        memcache\
     && docker-php-source delete \
     # && pecl clear-cache \
     && rm -rf /var/lib/apt/lists/* \
@@ -69,6 +71,7 @@ RUN set -ex \
     # 修改时区
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo 'Asia/Shanghai' >/etc/timezone \
+    && sed -i 's/;date.timezone =/date.timezone = "Asia\/Shanghai"/' "$PHP_INI_DIR/php.ini"
     # 修改 vim 配置
    #  && echo "set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936" >> /etc/vim/vimrc \
    # && echo "set termencoding=utf-8" >> /etc/vim/vimrc \
